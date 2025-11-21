@@ -53,7 +53,9 @@ export default function HomePage() {
 
       {!loading && !result && <ExampleUrls onSelectUrl={handleSelectUrl} />}
 
-      <StepsProgress steps={steps} activeStep={activeStep >= 0 ? activeStep : steps.length - 1} />
+      {status !== RequestStatus.IDLE && (
+        <StepsProgress steps={steps} activeStep={activeStep >= 0 ? activeStep : steps.length - 1} />
+      )}
 
       {error && (
         <div className="rounded-lg bg-red-50 p-4">
@@ -72,7 +74,7 @@ export default function HomePage() {
           <div className="flex justify-center">
             <button
               onClick={handleNewAnalysis}
-              className="rounded-lg border-2 border-blue-600 bg-white px-6 py-2.5 font-medium text-blue-600 transition-all hover:bg-blue-50"
+              className="cursor-pointer rounded-lg border-2 border-blue-600 bg-white px-6 py-2.5 font-medium text-blue-600 transition-all hover:bg-blue-50"
             >
               ✨ Analyze Another Channel
             </button>
