@@ -1,4 +1,10 @@
-export const REDDIT_BASE_URL = "https://old.reddit.com";
+export const REDDIT_BASE_URLS = [
+  "https://www.reddit.com",
+  "https://old.reddit.com",
+  "https://api.reddit.com",
+] as const;
+
+export const REDDIT_BASE_URL = REDDIT_BASE_URLS[0];
 
 export const REDDIT_ENDPOINTS = {
   SEARCH: `${REDDIT_BASE_URL}/search.json`,
