@@ -19,9 +19,23 @@ export const searchRedditDiscussions = async (topics: string[]): Promise<TopicRe
   logger.info({ topicsCount: topics.length }, "Searching Reddit discussions");
 
   const output: TopicRedditData[] = [];
+  let consecutiveFailures = 0;
+  const maxConsecutiveFailures = 2;
 
   for (const topic of topics) {
     try {
+      if (consecutiveFailures >= maxConsecutiveFailures) {
+        logger.warn(
+          { consecutiveFailures, remainingTopics: topics.length - topics.indexOf(topic) },
+          "Skipping remaining topics due to consecutive failures",
+        );
+        output.push({
+          topic,
+          posts: [],
+        });
+        continue;
+      }
+
       const encoded = encodeURIComponent(topic);
 
       logger.info({ topic }, "Fetching Reddit data for topic");
@@ -39,19 +53,23 @@ export const searchRedditDiscussions = async (topics: string[]): Promise<TopicRe
         posts,
       });
 
+      consecutiveFailures = 0;
+
       logger.info(
         { topic, postsCount: posts.length },
         "Successfully fetched Reddit posts for topic",
       );
 
       if (topics.indexOf(topic) < topics.length - 1) {
-        await delay(2000);
+        await delay(3000);
       }
     } catch (err) {
+      consecutiveFailures++;
       logger.error(
         {
           topic,
           error: err instanceof Error ? err.message : "Unknown error",
+          consecutiveFailures,
         },
         "Failed to fetch Reddit data for topic",
       );
@@ -63,6 +81,14 @@ export const searchRedditDiscussions = async (topics: string[]): Promise<TopicRe
     }
   }
 
-  logger.info({ topicsCount: output.length }, "Reddit search completed");
+  const successfulTopics = output.filter((t) => t.posts.length > 0).length;
+  logger.info(
+    {
+      topicsCount: output.length,
+      successfulTopics,
+      failedTopics: output.length - successfulTopics,
+    },
+    "Reddit search completed",
+  );
   return output;
 };
