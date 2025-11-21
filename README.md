@@ -175,33 +175,40 @@ Response:
 
 ### Reddit API Issues on Production
 
-If you encounter issues with Reddit API on production (e.g., Vercel, Netlify), the following improvements have been implemented:
+If you encounter issues with Reddit API on production (e.g., Vercel, Netlify), the application has multiple fallback mechanisms:
 
-**Problem**: Reddit's public API may block requests from certain IP ranges or due to rate limiting.
+**Problem**: Reddit's public API may block requests from certain hosting providers' IP ranges or due to rate limiting.
 
 **Solutions implemented**:
 
-1. **Enhanced User-Agent**: Uses a full browser User-Agent string instead of a simple bot identifier
-2. **Retry Logic**: Automatic retry with exponential backoff (up to 2 retries)
-3. **Rate Limit Handling**: Special handling for 429 (Too Many Requests) responses with longer wait times
-4. **Graceful Degradation**: Application continues to work even if Reddit API fails
-5. **Consecutive Failure Detection**: Stops making requests after 2 consecutive failures to avoid wasting time
-6. **Request Timeout**: 10-second timeout to prevent hanging requests
-7. **Delay Between Requests**: 3-second delay between Reddit API calls
+1. **Old Reddit Endpoint**: Uses `old.reddit.com` which is more stable and less restrictive
+2. **Enhanced Headers**: Full browser-like headers including `User-Agent`, `Accept`, `Sec-Fetch-*` headers
+3. **Retry Logic**: Automatic retry with exponential backoff (up to 2 retries)
+4. **Rate Limit Handling**: Special handling for 429 (Too Many Requests) responses with 5s+ wait times
+5. **Graceful Degradation**: Application continues to work even if Reddit API fails completely
+6. **Fast Fail**: Stops making requests after first failure to avoid wasting time on production
+7. **Request Timeout**: 15-second timeout to prevent hanging requests
+8. **Delay Between Requests**: 3-second delay between Reddit API calls
+9. **Environment Variable Control**: Can disable Reddit completely via `ENABLE_REDDIT=false`
 
-**Additional Headers**:
+**To disable Reddit on production**:
 
-- `Accept: application/json`
-- `Accept-Language: en-US,en;q=0.9`
-- `Cache-Control: no-cache`
-- `Pragma: no-cache`
+Add this environment variable to your hosting platform (Vercel, Netlify, etc.):
 
-If Reddit API continues to fail, consider:
+```bash
+ENABLE_REDDIT=false
+```
 
-- Using Reddit's official OAuth API (requires Reddit app credentials)
-- Implementing a caching layer
-- Using a proxy service
-- Rate limiting on the application level
+This will make the application skip Reddit API calls entirely while keeping all other functionality working.
+
+**Debugging**: Check your application logs for detailed Reddit API error information including response headers and status codes.
+
+**Alternative solutions** if Reddit continues to fail:
+
+- Use Reddit's official OAuth API (requires Reddit app credentials)
+- Implement a caching/proxy layer
+- Use a third-party Reddit API service
+- Self-host with a different IP range
 
 ## License
 

@@ -30,4 +30,7 @@ export const Env = {
   get NEWSAPI_KEY(): string {
     return getEnvVariable("NEWSAPI_KEY");
   },
+  get ENABLE_REDDIT(): boolean {
+    return process.env.ENABLE_REDDIT !== "false";
+  },
 };

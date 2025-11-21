@@ -1,3 +1,4 @@
+import { Env } from "@/config/env";
 import { REDDIT_ENDPOINTS, REDDIT_PARAMS } from "@/libs/constants/redditApi";
 import type { RedditItem, RedditPostData, TopicRedditData } from "@/types/reddit";
 import { logger } from "@/utils/logger";
@@ -16,18 +17,23 @@ const mapPostToRedditItem = (post: RedditPostData): RedditItem => ({
 });
 
 export const searchRedditDiscussions = async (topics: string[]): Promise<TopicRedditData[]> => {
+  if (!Env.ENABLE_REDDIT) {
+    logger.info("Reddit search disabled via ENABLE_REDDIT environment variable");
+    return topics.map((topic) => ({ topic, posts: [] }));
+  }
+
   logger.info({ topicsCount: topics.length }, "Searching Reddit discussions");
 
   const output: TopicRedditData[] = [];
   let consecutiveFailures = 0;
-  const maxConsecutiveFailures = 2;
+  const maxConsecutiveFailures = 1;
 
   for (const topic of topics) {
     try {
       if (consecutiveFailures >= maxConsecutiveFailures) {
         logger.warn(
           { consecutiveFailures, remainingTopics: topics.length - topics.indexOf(topic) },
-          "Skipping remaining topics due to consecutive failures",
+          "Skipping remaining topics - Reddit API appears to be unavailable",
         );
         output.push({
           topic,
@@ -40,7 +46,7 @@ export const searchRedditDiscussions = async (topics: string[]): Promise<TopicRe
 
       logger.info({ topic }, "Fetching Reddit data for topic");
 
-      const searchUrl = `${REDDIT_ENDPOINTS.SEARCH}?q=${encoded}&limit=${REDDIT_PARAMS.LIMIT}&sort=${REDDIT_PARAMS.SORT}&t=${REDDIT_PARAMS.TIME}&type=link`;
+      const searchUrl = `${REDDIT_ENDPOINTS.SEARCH}?q=${encoded}&limit=${REDDIT_PARAMS.LIMIT}&sort=${REDDIT_PARAMS.SORT}&t=${REDDIT_PARAMS.TIME}&type=link&raw_json=${REDDIT_PARAMS.RAW_JSON}&restrict_sr=`;
 
       const response = await redditApiRequest(searchUrl);
 

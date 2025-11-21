@@ -15,22 +15,34 @@ export const redditApiRequest = async (url: string, retries = 2): Promise<Reddit
         headers: {
           "User-Agent":
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-          Accept: "application/json",
+          Accept: "application/json, text/html",
           "Accept-Language": "en-US,en;q=0.9",
+          "Accept-Encoding": "gzip, deflate, br",
           "Cache-Control": "no-cache",
           Pragma: "no-cache",
+          Connection: "keep-alive",
+          "Sec-Fetch-Dest": "document",
+          "Sec-Fetch-Mode": "navigate",
+          "Sec-Fetch-Site": "none",
+          "Upgrade-Insecure-Requests": "1",
         },
         next: { revalidate: 0 },
-        signal: AbortSignal.timeout(10_000),
+        signal: AbortSignal.timeout(15_000),
       });
 
       if (!res.ok) {
         const errorText = await res.text();
+        const headers: Record<string, string> = {};
+        res.headers.forEach((value, key) => {
+          headers[key] = value;
+        });
+
         logger.error(
           {
             status: res.status,
             statusText: res.statusText,
-            error: errorText,
+            error: errorText.substring(0, 500),
+            headers,
             url: maskedUrl,
             attempt: attempt + 1,
           },
