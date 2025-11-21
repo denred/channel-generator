@@ -4,11 +4,14 @@ export const YOUTUBE_API_ENDPOINTS = {
   CHANNELS: "/channels",
   SEARCH: "/search",
   VIDEOS: "/videos",
+  ACTIVITIES: "/activities",
+  PLAYLIST_ITEMS: "/playlistItems",
 } as const;
 
 export const YOUTUBE_API_PARTS = {
   ID: "id",
   SNIPPET: "snippet",
+  CONTENT_DETAILS: "contentDetails",
 } as const;
 
 export const YOUTUBE_API_PARAMS = {
