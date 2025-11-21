@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 
 import { AppErrors } from "@/libs/enums/appErrors";
 import { HttpCode } from "@/libs/enums/httpCode";
-import { getRelevantNewsFromNewsApi } from "@/services/news/newsapi/getRelevantNewsFromNewsApi";
+import { getRelevantNews } from "@/services/news/gnews/getrelevantNews";
 import { extractTopicsFromVideos } from "@/services/openai/extractTopicsFromVideos";
 import { generateVideoIdeas } from "@/services/openai/generateVideoIdeas";
 import { searchRedditDiscussions } from "@/services/reddit/searchRedditDiscussions";
@@ -35,7 +35,8 @@ export const POST = async (req: NextRequest) => {
     const topics = await extractTopicsFromVideos(lastVideos);
     const topicStrings = topics.topics.map((t) => t.topic);
 
-    const news = await getRelevantNewsFromNewsApi(topicStrings);
+    // const news = await getRelevantNewsFromNewsApi(topicStrings);
+    const news = await getRelevantNews(topicStrings);
     const reddit = await searchRedditDiscussions(topicStrings);
 
     const ideas = await generateVideoIdeas({

@@ -49,24 +49,24 @@ const ThemeToggle = () => {
       <div
         className={clsx(
           "absolute h-5 w-5 rounded-full shadow transition-transform duration-200",
-          "bg-white dark:bg-gray-700",
+          "flex items-center justify-center bg-white dark:bg-gray-700",
           theme === ThemeMode.DARK ? "translate-x-6" : "translate-x-1",
         )}
-      />
+      >
+        <FiSun
+          className={clsx(
+            "text-[14px] text-yellow-500 transition-opacity duration-200",
+            theme === ThemeMode.LIGHT ? "opacity-100" : "opacity-0",
+          )}
+        />
 
-      <FiSun
-        className={clsx(
-          "absolute left-1 text-[14px] text-gray-500 transition-opacity duration-200",
-          theme === ThemeMode.LIGHT ? "opacity-100" : "opacity-0",
-        )}
-      />
-
-      <FiMoon
-        className={clsx(
-          "absolute right-1 text-[14px] text-gray-400 transition-opacity duration-200",
-          theme === ThemeMode.DARK ? "opacity-100" : "opacity-0",
-        )}
-      />
+        <FiMoon
+          className={clsx(
+            "absolute text-[14px] text-blue-400 transition-opacity duration-200",
+            theme === ThemeMode.DARK ? "opacity-100" : "opacity-0",
+          )}
+        />
+      </div>
     </button>
   );
 };

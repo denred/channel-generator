@@ -29,17 +29,17 @@ const NewsTab = ({ news }: NewsTabProps) => {
                     href={article.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group rounded-lg border border-gray-200 bg-white/50 p-4 shadow-sm transition-all hover:border-green-400 hover:shadow-md dark:border-gray-700 dark:bg-gray-900/40 dark:hover:border-green-500/40"
+                    className="group rounded-lg border border-gray-200 bg-white/50 p-3 shadow-sm transition-all hover:border-green-400 hover:shadow-md md:p-4 dark:border-gray-700 dark:bg-gray-900/40 dark:hover:border-green-500/40"
                   >
-                    <h4 className="mb-2 line-clamp-2 text-sm font-medium text-gray-900 transition-colors group-hover:text-green-600 dark:text-gray-100 dark:group-hover:text-green-400">
+                    <h4 className="mb-1.5 line-clamp-2 text-xs font-medium text-gray-900 transition-colors group-hover:text-green-600 md:mb-2 md:text-sm dark:text-gray-100 dark:group-hover:text-green-400">
                       {article.title}
                     </h4>
 
-                    <p className="mb-2 line-clamp-2 text-xs text-gray-600 dark:text-gray-400">
+                    <p className="mb-1.5 line-clamp-2 text-[11px] text-gray-600 md:mb-2 md:text-xs dark:text-gray-400">
                       {article.description}
                     </p>
 
-                    <div className="flex items-center justify-between text-[11px] text-gray-500 dark:text-gray-400">
+                    <div className="flex items-center justify-between text-[10px] text-gray-500 md:text-[11px] dark:text-gray-400">
                       <span className="font-medium">{article.source}</span>
                       <span>{new Date(article.publishedAt).toLocaleDateString()}</span>
                     </div>
