@@ -13,4 +13,5 @@ export const ErrorMessages: Record<AppErrors, string> = {
   [AppErrors.INVALID_API_RESPONSE]: "Received invalid response from API.",
   [AppErrors.VIDEOS_NOT_FOUND]: "No videos found for the specified channel.",
   [AppErrors.NEWS_FETCH_FAILED]: "Failed to fetch news articles.",
+  [AppErrors.REDDIT_API_FAILED]: "Reddit API request failed.",
 };

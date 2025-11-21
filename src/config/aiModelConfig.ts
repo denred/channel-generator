@@ -8,15 +8,9 @@ export const AI_MODEL_CONFIG = {
     responseType: "json_object",
   },
   [AiModel.GPT_4O]: {
-    temperature: 0.85,
+    temperature: 0.2,
     maxTokens: 3000,
     json: true,
-    responseType: "json_object",
-  },
-  [AiModel.O1_PREVIEW]: {
-    temperature: 0.4,
-    maxTokens: 1500,
-    json: false,
     responseType: "json_object",
   },
 } as const;

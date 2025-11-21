@@ -19,7 +19,7 @@ export const extractTopicsFromVideos = async (
 
     const prompt = getVideoExtractionPrompt(videos);
     const openai = getOpenAIClient();
-    const model = AiModel.O1_PREVIEW;
+    const model = AiModel.GPT_4O;
     const cfg = AI_MODEL_CONFIG[model];
 
     const response = await openai.chat.completions.create({
