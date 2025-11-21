@@ -11,4 +11,5 @@ export const ErrorMessages: Record<AppErrors, string> = {
   [AppErrors.API_KEY_MISSING]: "YouTube API key is missing.",
   [AppErrors.API_REQUEST_FAILED]: "YouTube API request failed.",
   [AppErrors.INVALID_API_RESPONSE]: "Received invalid response from YouTube API.",
+  [AppErrors.VIDEOS_NOT_FOUND]: "No videos found for the specified channel.",
 };
