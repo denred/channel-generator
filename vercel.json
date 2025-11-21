@@ -1,0 +1,7 @@
+{
+  "build": {
+    "env": {
+      "SKIP_PROCESS_EXIT_CHECK": "true"
+    }
+  }
+}
