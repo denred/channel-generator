@@ -12,6 +12,8 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  serverExternalPackages: ["pino", "pino-pretty"],
+  turbopack: {},
 };
 
 export default nextConfig;
