@@ -1,20 +1,6 @@
-import type { TopicWithNews } from "@/types/news";
-import type { ExtractTopicsResult } from "@/types/openai";
+import type { AnalyzeChannelResponse } from "@/types/analysis";
 
-interface AnalysisResultData {
-  channelId: string;
-  lastVideos: Array<{
-    videoId: string;
-    title: string;
-    thumbnail: string;
-    publishedAt: string;
-    description: string;
-  }>;
-  topics: ExtractTopicsResult;
-  news: TopicWithNews[];
-}
-
-export default function AnalysisResult({ data }: { data: AnalysisResultData }) {
+export default function AnalysisResult({ data }: { data: AnalyzeChannelResponse }) {
   return (
     <section className="mt-8 space-y-6">
       {/* Topics Section */}
