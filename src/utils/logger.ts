@@ -1,7 +1,9 @@
 import pino from "pino";
 
+import { Env } from "@/config/env";
+
 export const logger = pino({
-  level: process.env.LOG_LEVEL || "info",
+  level: Env.LOG_LEVEL,
   base: undefined,
   browser: {
     asObject: true,

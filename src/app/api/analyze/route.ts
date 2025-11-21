@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 
 import { AppErrors } from "@/libs/enums/appErrors";
 import { HttpCode } from "@/libs/enums/httpCode";
+import { extractTopicsFromVideos } from "@/services/openai/extractTopicsFromVideos";
 import { getChannelIdFromUrl } from "@/services/youtube/getChannelIdFromUrl";
 import { getLastVideos } from "@/services/youtube/getLastVideos";
 import { getErrorResponse } from "@/utils/errorResponse";
@@ -24,11 +25,19 @@ export const POST = async (req: NextRequest) => {
     const channelId = await getChannelIdFromUrl(channelUrl);
     const lastVideos = await getLastVideos(channelId);
 
+    const topics = await extractTopicsFromVideos(
+      lastVideos.map((v) => ({
+        title: v.title,
+        description: v.description,
+      })),
+    );
+
     return NextResponse.json(
       {
         status: HttpCode.OK,
         channelId,
         lastVideos,
+        topics,
       },
       { status: HttpCode.OK },
     );

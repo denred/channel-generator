@@ -1,21 +1,11 @@
+import { Env } from "@/config/env";
 import { YOUTUBE_API_BASE_URL } from "@/libs/constants/youtubeApi";
 import { AppErrors } from "@/libs/enums/appErrors";
 import { AppException } from "@/utils/appException";
 
-export const getApiKey = (): string => {
-  const apiKey = process.env.YOUTUBE_API_KEY;
-
-  if (!apiKey) {
-    throw new AppException(AppErrors.API_KEY_MISSING);
-  }
-
-  return apiKey;
-};
-
 export const injectApiKey = (url: string): string => {
-  const apiKey = getApiKey();
   const urlObj = new URL(url);
-  urlObj.searchParams.set("key", apiKey);
+  urlObj.searchParams.set("key", Env.YOUTUBE_API_KEY);
 
   return urlObj.toString();
 };
@@ -27,7 +17,6 @@ interface YoutubeApiRequestOptions {
 
 export const youtubeApiRequest = async <T>(options: YoutubeApiRequestOptions): Promise<T> => {
   const { endpoint, searchParams = {} } = options;
-  const apiKey = getApiKey();
 
   const url = new URL(`${YOUTUBE_API_BASE_URL}${endpoint}`);
 
@@ -35,7 +24,7 @@ export const youtubeApiRequest = async <T>(options: YoutubeApiRequestOptions): P
     url.searchParams.set(key, value);
   });
 
-  url.searchParams.set("key", apiKey);
+  url.searchParams.set("key", Env.YOUTUBE_API_KEY);
 
   try {
     const response = await fetch(url.toString());
