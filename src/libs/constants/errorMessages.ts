@@ -8,8 +8,9 @@ export const ErrorMessages: Record<AppErrors, string> = {
   [AppErrors.CHANNEL_URL_REQUIRED]: "Channel URL is required.",
   [AppErrors.YOUTUBE_CHANNEL_REQUIRED]: "YouTube channel URL is required.",
   [AppErrors.INVALID_YOUTUBE_CHANNEL]: "The provided URL is not a valid YouTube channel.",
-  [AppErrors.API_KEY_MISSING]: "YouTube API key is missing.",
-  [AppErrors.API_REQUEST_FAILED]: "YouTube API request failed.",
-  [AppErrors.INVALID_API_RESPONSE]: "Received invalid response from YouTube API.",
+  [AppErrors.API_KEY_MISSING]: "API key is missing.",
+  [AppErrors.API_REQUEST_FAILED]: "API request failed.",
+  [AppErrors.INVALID_API_RESPONSE]: "Received invalid response from API.",
   [AppErrors.VIDEOS_NOT_FOUND]: "No videos found for the specified channel.",
+  [AppErrors.NEWS_FETCH_FAILED]: "Failed to fetch news articles.",
 };

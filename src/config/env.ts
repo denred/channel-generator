@@ -24,4 +24,10 @@ export const Env = {
   get LOG_LEVEL(): string {
     return process.env.LOG_LEVEL || "info";
   },
+  get GNEWS_API_KEY(): string {
+    return getEnvVariable("GNEWS_API_KEY");
+  },
+  get NEWSAPI_KEY(): string {
+    return getEnvVariable("NEWSAPI_KEY");
+  },
 };

@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 
 import { AppErrors } from "@/libs/enums/appErrors";
 import { HttpCode } from "@/libs/enums/httpCode";
+import { getRelevantNewsFromNewsApi } from "@/services/newsapi/getRelevantNewsFromNewsApi";
 import { extractTopicsFromVideos } from "@/services/openai/extractTopicsFromVideos";
 import { getChannelIdFromUrl } from "@/services/youtube/getChannelIdFromUrl";
 import { getLastVideos } from "@/services/youtube/getLastVideos";
@@ -32,12 +33,15 @@ export const POST = async (req: NextRequest) => {
       })),
     );
 
+    const news = getRelevantNewsFromNewsApi(topics.topics.map((t) => t.topic));
+
     return NextResponse.json(
       {
         status: HttpCode.OK,
         channelId,
         lastVideos,
         topics,
+        news,
       },
       { status: HttpCode.OK },
     );
