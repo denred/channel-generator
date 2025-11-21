@@ -22,42 +22,78 @@ interface ActivityItem {
     publishedAt: string;
   };
 }
+interface ChannelsResponse {
+  items?: Array<{
+    id: string;
+    contentDetails?: {
+      relatedPlaylists?: {
+        uploads?: string;
+      };
+    };
+  }>;
+}
 
-interface YouTubeActivitiesResponse {
-  items?: ActivityItem[];
+interface PlaylistItemsResponse {
+  items?: Array<{
+    contentDetails?: { videoId?: string };
+    snippet?: {
+      title?: string;
+      description?: string;
+      thumbnails?: { high?: { url?: string } };
+      publishedAt?: string;
+    };
+  }>;
 }
 
 export const getLastVideos = async (channelId: string) => {
-  logger.info({ channelId }, "Fetching last videos for channel using Activities API");
+  logger.info({ channelId }, "Fetching last videos for channel using PlaylistItems API");
 
-  const data = await youtubeApiRequest<YouTubeActivitiesResponse>({
-    endpoint: YOUTUBE_API_ENDPOINTS.ACTIVITIES,
+  const channelData = await youtubeApiRequest<ChannelsResponse>({
+    endpoint: YOUTUBE_API_ENDPOINTS.CHANNELS,
+    searchParams: {
+      part: YOUTUBE_API_PARTS.CONTENT_DETAILS,
+      id: channelId,
+    },
+  });
+
+  const uploadsPlaylistId = channelData.items?.[0]?.contentDetails?.relatedPlaylists?.uploads;
+
+  if (!uploadsPlaylistId) {
+    logger.error({ channelId }, "Uploads playlist not found for channel");
+    throw new AppException(AppErrors.VIDEOS_NOT_FOUND);
+  }
+
+  const data = await youtubeApiRequest<PlaylistItemsResponse>({
+    endpoint: YOUTUBE_API_ENDPOINTS.PLAYLIST_ITEMS,
     searchParams: {
       part: `${YOUTUBE_API_PARTS.SNIPPET},${YOUTUBE_API_PARTS.CONTENT_DETAILS}`,
-      channelId,
+      playlistId: uploadsPlaylistId,
       maxResults: YOUTUBE_API_PARAMS.MAX_RESULTS_10,
     },
   });
 
-  logger.info({ itemsCount: data.items?.length || 0 }, "YouTube API response received");
+  logger.info(
+    { itemsCount: data.items?.length || 0 },
+    "YouTube API response received (playlistItems)",
+  );
 
   if (!data.items || !data.items.length) {
-    logger.error({ channelId }, "No videos found for channel");
+    logger.error({ channelId }, "No videos found in uploads playlist");
     throw new AppException(AppErrors.VIDEOS_NOT_FOUND);
   }
 
   const videos = data.items
-    .filter((item) => item.contentDetails.upload?.videoId)
+    .filter((item) => !!item.contentDetails?.videoId)
     .map((item) => ({
-      videoId: item.contentDetails.upload!.videoId,
-      title: item.snippet.title,
-      thumbnail: item.snippet.thumbnails.high.url,
-      publishedAt: item.snippet.publishedAt,
-      description: item.snippet.description,
+      videoId: item.contentDetails!.videoId!,
+      title: item.snippet?.title || "",
+      thumbnail: item.snippet?.thumbnails?.high?.url || "",
+      publishedAt: item.snippet?.publishedAt || "",
+      description: item.snippet?.description || "",
     }));
 
   if (!videos.length) {
-    logger.error({ channelId }, "No video uploads found in activities");
+    logger.error({ channelId }, "No videos returned from uploads playlist");
     throw new AppException(AppErrors.VIDEOS_NOT_FOUND);
   }
 
@@ -67,7 +103,7 @@ export const getLastVideos = async (channelId: string) => {
       latestVideo: videos[0]?.title,
       latestDate: videos[0]?.publishedAt,
     },
-    "Videos fetched successfully from Activities API",
+    "Videos fetched successfully from uploads playlist",
   );
 
   return videos;
