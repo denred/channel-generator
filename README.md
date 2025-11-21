@@ -191,7 +191,7 @@ If you encounter issues with Reddit API on production (e.g., Vercel, Netlify), t
 8. **Delay Between Requests**: 3-second delay between Reddit API calls
 9. **Environment Variable Control**: Can disable Reddit completely via `ENABLE_REDDIT=false`
 
-**To disable Reddit on production**:
+**To disable Reddit on production** (if it continues to fail):
 
 Add this environment variable to your hosting platform (Vercel, Netlify, etc.):
 
@@ -201,7 +201,24 @@ ENABLE_REDDIT=false
 
 This will make the application skip Reddit API calls entirely while keeping all other functionality working.
 
-**Debugging**: Check your application logs for detailed Reddit API error information including response headers and status codes.
+**Debugging on Production**:
+
+The application now includes comprehensive logging for Reddit API issues:
+
+1. Check your hosting platform's logs (e.g., Vercel Dashboard → Your Project → Logs)
+2. Look for log entries with these keys:
+   - `Reddit search configuration` - Shows if Reddit is enabled and environment details
+   - `Reddit API Request Starting` - Shows the request URL and attempt number
+   - `Reddit API Error` - Shows HTTP status, error text, and response headers
+   - `Reddit API Request Failed` - Shows error details and retry information
+   - `Reddit API Success` - Confirms successful requests
+
+3. Common issues to check:
+   - Status 403 or 429: Reddit is blocking your server's IP
+   - Timeout errors: Network connectivity issues
+   - Invalid JSON: Reddit returning HTML instead of JSON (check response headers)
+
+If you see `"Reddit search disabled"` in logs but want it enabled, make sure `ENABLE_REDDIT` is NOT set to `"false"`.
 
 **Alternative solutions** if Reddit continues to fail:
 

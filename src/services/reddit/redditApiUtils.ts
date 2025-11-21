@@ -9,26 +9,30 @@ export const redditApiRequest = async (url: string, retries = 2): Promise<Reddit
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
       const maskedUrl = url.replace(/q=[^&]+/, "q=***");
-      logger.info({ url: maskedUrl, attempt: attempt + 1 }, "Reddit API Request");
+      logger.info(
+        {
+          url: maskedUrl,
+          fullUrl: url.substring(0, 100),
+          attempt: attempt + 1,
+          env: process.env.NODE_ENV,
+        },
+        "Reddit API Request Starting",
+      );
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15_000);
 
       const res = await fetch(url, {
         headers: {
           "User-Agent":
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-          Accept: "application/json, text/html",
-          "Accept-Language": "en-US,en;q=0.9",
-          "Accept-Encoding": "gzip, deflate, br",
-          "Cache-Control": "no-cache",
-          Pragma: "no-cache",
-          Connection: "keep-alive",
-          "Sec-Fetch-Dest": "document",
-          "Sec-Fetch-Mode": "navigate",
-          "Sec-Fetch-Site": "none",
-          "Upgrade-Insecure-Requests": "1",
+          Accept: "application/json",
         },
-        next: { revalidate: 0 },
-        signal: AbortSignal.timeout(15_000),
+        cache: "no-store",
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       if (!res.ok) {
         const errorText = await res.text();
@@ -72,15 +76,16 @@ export const redditApiRequest = async (url: string, retries = 2): Promise<Reddit
       return json;
     } catch (err) {
       lastError = err instanceof Error ? err : new Error("Unknown error");
-      logger.error(
-        {
-          error: lastError.message,
-          stack: lastError.stack,
-          attempt: attempt + 1,
-          retriesLeft: retries - attempt,
-        },
-        "Reddit API Request Failed",
-      );
+      const errorDetails = {
+        error: lastError.message,
+        errorName: lastError.name,
+        stack: lastError.stack,
+        attempt: attempt + 1,
+        retriesLeft: retries - attempt,
+        isAbortError: lastError.name === "AbortError",
+        isTimeout: lastError.message.includes("timeout"),
+      };
+      logger.error(errorDetails, "Reddit API Request Failed");
 
       if (attempt < retries && !(err instanceof AppException)) {
         await new Promise((resolve) => setTimeout(resolve, 2000 * (attempt + 1)));

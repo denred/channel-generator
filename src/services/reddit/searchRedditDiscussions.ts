@@ -17,7 +17,17 @@ const mapPostToRedditItem = (post: RedditPostData): RedditItem => ({
 });
 
 export const searchRedditDiscussions = async (topics: string[]): Promise<TopicRedditData[]> => {
-  if (!Env.ENABLE_REDDIT) {
+  const redditEnabled = Env.ENABLE_REDDIT;
+  logger.info(
+    {
+      redditEnabled,
+      enableRedditEnv: process.env.ENABLE_REDDIT,
+      nodeEnv: process.env.NODE_ENV,
+    },
+    "Reddit search configuration",
+  );
+
+  if (!redditEnabled) {
     logger.info("Reddit search disabled via ENABLE_REDDIT environment variable");
     return topics.map((topic) => ({ topic, posts: [] }));
   }
