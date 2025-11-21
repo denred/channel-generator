@@ -3,4 +3,5 @@ export enum AnalysisStep {
   EXTRACT_TOPICS = "Extracting topics",
   FETCH_NEWS = "Fetching relevant news",
   SEARCH_REDDIT = "Searching Reddit discussions",
+  GENERATE_IDEAS = "Generating video ideas",
 }

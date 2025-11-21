@@ -1,6 +1,7 @@
 import type { TopicWithNews } from "./news";
 import type { ExtractTopicsResult } from "./openai";
 import type { TopicRedditData } from "./reddit";
+import type { VideoIdea } from "./videoIdea";
 
 export interface AnalysisStep {
   label: string;
@@ -20,4 +21,5 @@ export interface AnalyzeChannelResponse {
   topics: ExtractTopicsResult;
   news: TopicWithNews[];
   reddit: TopicRedditData[];
+  ideas: VideoIdea[];
 }

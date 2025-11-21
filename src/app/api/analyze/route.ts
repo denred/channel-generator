@@ -4,6 +4,7 @@ import { AppErrors } from "@/libs/enums/appErrors";
 import { HttpCode } from "@/libs/enums/httpCode";
 import { getRelevantNewsFromNewsApi } from "@/services/newsapi/getRelevantNewsFromNewsApi";
 import { extractTopicsFromVideos } from "@/services/openai/extractTopicsFromVideos";
+import { generateVideoIdeas } from "@/services/openai/generateVideoIdeas";
 import { searchRedditDiscussions } from "@/services/reddit/searchRedditDiscussions";
 import { getChannelIdFromUrl } from "@/services/youtube/getChannelIdFromUrl";
 import { getLastVideos } from "@/services/youtube/getLastVideos";
@@ -39,6 +40,13 @@ export const POST = async (req: NextRequest) => {
     const news = await getRelevantNewsFromNewsApi(topicStrings);
     const reddit = await searchRedditDiscussions(topicStrings);
 
+    const ideas = await generateVideoIdeas({
+      topics: topics.topics,
+      news,
+      reddit,
+      recentVideoTitles: lastVideos.map((v) => v.title),
+    });
+
     return NextResponse.json(
       {
         status: HttpCode.OK,
@@ -47,6 +55,7 @@ export const POST = async (req: NextRequest) => {
         topics,
         news,
         reddit,
+        ideas,
       },
       { status: HttpCode.OK },
     );
