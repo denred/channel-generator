@@ -5,20 +5,36 @@ import { useState, useEffect } from "react";
 import { FiSun, FiMoon } from "react-icons/fi";
 
 import { ThemeMode } from "@/libs/enums/themeMode";
-import { getInitialTheme, THEME_STORAGE_KEY } from "@/utils/theme";
+import { THEME_STORAGE_KEY } from "@/utils/theme";
 
 const ThemeToggle = () => {
-  const [theme, setTheme] = useState<ThemeMode>(getInitialTheme);
+  const [theme, setTheme] = useState<ThemeMode>(ThemeMode.LIGHT);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    document.documentElement.classList.toggle("dark", theme === ThemeMode.DARK);
-  }, [theme]);
+    const isDark = document.documentElement.classList.contains("dark");
+    if (isDark && theme === ThemeMode.LIGHT) {
+      setTheme(ThemeMode.DARK);
+    }
+    setMounted(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (mounted) {
+      document.documentElement.classList.toggle("dark", theme === ThemeMode.DARK);
+      localStorage.setItem(THEME_STORAGE_KEY, theme);
+    }
+  }, [theme, mounted]);
 
   const toggleTheme = () => {
     const next = theme === ThemeMode.LIGHT ? ThemeMode.DARK : ThemeMode.LIGHT;
     setTheme(next);
-    localStorage.setItem(THEME_STORAGE_KEY, next);
   };
+
+  if (!mounted) {
+    return <div className="h-7 w-12" />;
+  }
 
   return (
     <button

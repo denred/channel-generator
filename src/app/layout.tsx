@@ -17,7 +17,12 @@ const setTheme = `
       const saved = localStorage.getItem('theme');
       const system = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
       const theme = saved || system;
-      document.documentElement.dataset.theme = theme;
+      
+      if (theme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
     } catch(e) {}
   })();
 `;
