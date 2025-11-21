@@ -33,7 +33,7 @@ export const POST = async (req: NextRequest) => {
       })),
     );
 
-    const news = getRelevantNewsFromNewsApi(topics.topics.map((t) => t.topic));
+    const news = await getRelevantNewsFromNewsApi(topics.topics.map((t) => t.topic));
 
     return NextResponse.json(
       {

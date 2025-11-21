@@ -21,33 +21,33 @@ export const useAnalyzeChannel = () => {
     setSteps(INITIAL_STEPS);
 
     try {
+      const progressInterval = setInterval(() => {
+        setSteps((prev) => {
+          const currentStepIndex = prev.findIndex((s) => !s.done);
+          if (currentStepIndex !== -1 && currentStepIndex < prev.length - 1) {
+            return prev.map((s, i) => (i === currentStepIndex ? { ...s, done: true } : s));
+          }
+          return prev;
+        });
+      }, 2000);
+
       const res = await fetch(ApiRoutes.ANALYZE_CHANNEL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ channelUrl }),
       });
 
+      clearInterval(progressInterval);
+
       if (!res.ok) {
-        throw new Error(`Request failed with status ${res.status}`);
-      }
-
-      const reader = res.body?.getReader();
-      let stepIndex = 0;
-
-      if (reader) {
-        while (true) {
-          const { done } = await reader.read();
-          if (done) {
-            break;
-          }
-
-          setSteps((prev) => prev.map((s, i) => (i === stepIndex ? { ...s, done: true } : s)));
-
-          stepIndex++;
-        }
+        const errorData = (await res.json()) as { message?: string };
+        throw new Error(errorData.message || `Request failed with status ${res.status}`);
       }
 
       const json = (await res.json()) as AnalyzeChannelResponse;
+
+      setSteps((prev) => prev.map((s) => ({ ...s, done: true })));
+
       setResult(json);
       setStatus(RequestStatus.SUCCESS);
     } catch (err) {
