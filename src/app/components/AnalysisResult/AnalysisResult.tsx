@@ -68,6 +68,79 @@ export default function AnalysisResult({ data }: { data: AnalyzeChannelResponse 
         </div>
       </div>
 
+      {/* Reddit Section */}
+      <div className="rounded-xl bg-white p-6 shadow-lg">
+        <h2 className="mb-4 flex items-center gap-2 text-2xl font-bold text-gray-800">
+          <span className="text-2xl">💬</span>
+          Reddit Discussions
+        </h2>
+        <div className="space-y-6">
+          {data.reddit.map((topicData, topicIndex) => (
+            <div key={topicIndex} className="space-y-3">
+              <h3 className="border-l-4 border-orange-500 pl-3 text-lg font-semibold text-gray-800">
+                {topicData.topic}
+              </h3>
+
+              {/* Posts */}
+              {topicData.posts.length > 0 && (
+                <div className="space-y-2">
+                  <h4 className="text-sm font-medium text-gray-600">Top Posts</h4>
+                  <div className="grid gap-3 md:grid-cols-2">
+                    {topicData.posts.slice(0, 4).map((post, postIndex) => (
+                      <a
+                        key={postIndex}
+                        href={post.permalink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group rounded-lg border border-gray-200 bg-orange-50 p-3 transition-all hover:border-orange-400 hover:shadow-md"
+                      >
+                        <p className="mb-2 line-clamp-2 text-sm font-medium text-gray-900 group-hover:text-orange-600">
+                          {post.text}
+                        </p>
+                        <div className="flex items-center justify-between text-xs text-gray-500">
+                          <span>u/{post.author}</span>
+                          <span className="font-medium text-orange-600">↑ {post.score}</span>
+                        </div>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Comments */}
+              {topicData.comments.length > 0 && (
+                <div className="space-y-2">
+                  <h4 className="text-sm font-medium text-gray-600">Top Comments</h4>
+                  <div className="grid gap-2">
+                    {topicData.comments.slice(0, 3).map((comment, commentIndex) => (
+                      <a
+                        key={commentIndex}
+                        href={comment.permalink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group rounded-lg border border-gray-200 bg-gray-50 p-3 transition-all hover:border-orange-300 hover:bg-orange-50"
+                      >
+                        <p className="mb-1 line-clamp-2 text-sm text-gray-700">{comment.text}</p>
+                        <div className="flex items-center justify-between text-xs text-gray-500">
+                          <span>u/{comment.author}</span>
+                          <span className="font-medium">↑ {comment.score}</span>
+                        </div>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {topicData.posts.length === 0 && topicData.comments.length === 0 && (
+                <p className="py-4 text-center text-sm text-gray-500">
+                  No Reddit discussions found for this topic
+                </p>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* Videos Section */}
       <div className="rounded-xl bg-white p-6 shadow-lg">
         <h2 className="mb-4 flex items-center gap-2 text-2xl font-bold text-gray-800">

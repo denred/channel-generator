@@ -55,7 +55,6 @@ export const getRelevantNews = async (topics: string[]): Promise<TopicWithNews[]
       logger.info({ topic, articlesCount: articles.length }, "News fetched for topic");
       results.push({ topic, news: articles });
 
-      // Add delay between requests to avoid rate limiting (1 second)
       if (i < topics.length - 1) {
         logger.info("Waiting 1 second before next request to avoid rate limiting");
         await delay(1000);
@@ -70,8 +69,6 @@ export const getRelevantNews = async (topics: string[]): Promise<TopicWithNews[]
         "Failed to fetch news for topic",
       );
 
-      // If rate limited, log a warning but don't fail the entire request
-      // Return partial results instead
       logger.warn(
         { resultsCount: results.length, totalTopics: topics.length },
         "Returning partial results due to rate limiting",
