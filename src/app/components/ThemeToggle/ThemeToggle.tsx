@@ -1,5 +1,6 @@
 "use client";
 
+import clsx from "clsx";
 import { useState, useEffect } from "react";
 import { FiSun, FiMoon } from "react-icons/fi";
 
@@ -23,17 +24,32 @@ const ThemeToggle = () => {
     <button
       onClick={toggleTheme}
       aria-label="Toggle Theme"
-      className="relative flex h-7 w-12 cursor-pointer items-center rounded-full border border-gray-300 bg-gray-100 backdrop-blur-sm transition-all duration-200 hover:bg-gray-200 dark:border-gray-700 dark:bg-gray-900 dark:hover:bg-gray-800"
+      className={clsx(
+        "relative flex h-7 w-12 cursor-pointer items-center rounded-full border backdrop-blur-sm transition-all duration-200",
+        "border-gray-300 bg-gray-100 hover:bg-gray-200",
+        "dark:border-gray-700 dark:bg-gray-900 dark:hover:bg-gray-800",
+      )}
     >
       <div
-        className={`absolute h-5 w-5 rounded-full bg-white shadow transition-transform duration-200 dark:bg-gray-700 ${theme === ThemeMode.DARK ? "translate-x-6" : "translate-x-1"} `}
+        className={clsx(
+          "absolute h-5 w-5 rounded-full shadow transition-transform duration-200",
+          "bg-white dark:bg-gray-700",
+          theme === ThemeMode.DARK ? "translate-x-6" : "translate-x-1",
+        )}
       />
 
       <FiSun
-        className={`absolute left-1 text-[14px] text-gray-500 transition-opacity duration-200 ${theme === ThemeMode.LIGHT ? "opacity-100" : "opacity-0"} `}
+        className={clsx(
+          "absolute left-1 text-[14px] text-gray-500 transition-opacity duration-200",
+          theme === ThemeMode.LIGHT ? "opacity-100" : "opacity-0",
+        )}
       />
+
       <FiMoon
-        className={`absolute right-1 text-[14px] text-gray-400 transition-opacity duration-200 ${theme === ThemeMode.DARK ? "opacity-100" : "opacity-0"} `}
+        className={clsx(
+          "absolute right-1 text-[14px] text-gray-400 transition-opacity duration-200",
+          theme === ThemeMode.DARK ? "opacity-100" : "opacity-0",
+        )}
       />
     </button>
   );
