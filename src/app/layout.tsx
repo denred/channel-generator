@@ -37,14 +37,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body
         className={`${inter.className} min-h-screen bg-gray-50 text-gray-900 transition-colors duration-300 dark:bg-gray-900 dark:text-gray-100`}
       >
-        <header className="border-b border-gray-200 bg-white/60 backdrop-blur dark:border-gray-800 dark:bg-gray-900/60">
-          <div className="mx-auto flex h-16 w-full max-w-4xl items-center justify-between px-6">
-            <h1 className="text-lg font-semibold tracking-tight">Channel Analyzer</h1>
+        <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/80 backdrop-blur-md md:bg-white/60 dark:border-gray-800 dark:bg-gray-900/80 md:dark:bg-gray-900/60">
+          <div className="mx-auto flex h-14 w-full max-w-4xl items-center justify-between px-4 md:h-16 md:px-6">
+            <h1 className="text-base font-semibold tracking-tight md:text-lg">Channel Analyzer</h1>
             <ThemeToggle />
           </div>
         </header>
 
-        <main className="mx-auto w-full max-w-4xl px-6 py-10">{children}</main>
+        <main className="mx-auto w-full max-w-4xl px-0 py-0 md:px-6 md:py-10">{children}</main>
 
         <Toaster position="top-right" />
       </body>

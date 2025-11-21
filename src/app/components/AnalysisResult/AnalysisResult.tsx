@@ -26,7 +26,7 @@ export default memo(function AnalysisResult({ data }: { data: AnalyzeChannelResp
   ];
 
   return (
-    <section className="mt-8 space-y-10">
+    <section className="mt-6 space-y-6 md:mt-8 md:space-y-10">
       <TabNavigation tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
       <TabContent activeTab={activeTab} data={data} />
       <ChannelInfo channelId={data.channelId} channelName={String(data.channelName)} />
