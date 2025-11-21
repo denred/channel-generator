@@ -58,6 +58,7 @@ const AnalysisForm = ({
           name="channelUrl"
           control={control}
           placeholder="Search YouTube channel..."
+          disabled={isLoading}
         />
 
         <SubmitButton isLoading={isLoading} />
