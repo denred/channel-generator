@@ -1,29 +1,22 @@
 import { REDDIT_ENDPOINTS, REDDIT_PARAMS } from "@/libs/constants/redditApi";
-import type { RedditCommentRaw, RedditItem, RedditPostRaw, TopicRedditData } from "@/types/reddit";
+import type { RedditItem, RedditPostData, TopicRedditData } from "@/types/reddit";
 import { logger } from "@/utils/logger";
 
 import { redditApiRequest } from "./redditApiUtils";
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-const mapCommentToRedditItem = (comment: RedditCommentRaw): RedditItem => ({
-  text: comment.body,
-  score: comment.score,
-  author: comment.author,
-  permalink: `https://www.reddit.com${comment.permalink ?? ""}`,
-  createdUtc: comment.created_utc,
-});
-
-const mapPostToRedditItem = (post: RedditPostRaw): RedditItem => ({
-  text: post.title,
+const mapPostToRedditItem = (post: RedditPostData): RedditItem => ({
+  text: post.title + (post.selftext ? `\n${post.selftext.substring(0, 200)}` : ""),
   score: post.score,
   author: post.author,
-  permalink: post.full_link || `https://www.reddit.com${post.permalink ?? ""}`,
+  permalink: `https://www.reddit.com${post.permalink}`,
   createdUtc: post.created_utc,
+  subreddit: post.subreddit,
 });
 
 export const searchRedditDiscussions = async (topics: string[]): Promise<TopicRedditData[]> => {
-  logger.info(`Searching Reddit discussions for ${topics.length} topics using Pushshift API`);
+  logger.info({ topicsCount: topics.length }, "Searching Reddit discussions");
 
   const output: TopicRedditData[] = [];
 
@@ -31,43 +24,45 @@ export const searchRedditDiscussions = async (topics: string[]): Promise<TopicRe
     try {
       const encoded = encodeURIComponent(topic);
 
-      logger.info(`Fetching Reddit data for topic: ${topic}`);
+      logger.info({ topic }, "Fetching Reddit data for topic");
 
-      const [comments, posts] = await Promise.all([
-        redditApiRequest<RedditCommentRaw>(
-          `${REDDIT_ENDPOINTS.COMMENT}?q=${encoded}&size=${REDDIT_PARAMS.SIZE}&sort=${REDDIT_PARAMS.SORT}&sort_type=${REDDIT_PARAMS.SORT_TYPE}`,
-        ),
-        redditApiRequest<RedditPostRaw>(
-          `${REDDIT_ENDPOINTS.SUBMISSION}?q=${encoded}&size=${REDDIT_PARAMS.SIZE}&sort=${REDDIT_PARAMS.SORT}&sort_type=${REDDIT_PARAMS.SORT_TYPE}`,
-        ),
-      ]);
+      const searchUrl = `${REDDIT_ENDPOINTS.SEARCH}?q=${encoded}&limit=${REDDIT_PARAMS.LIMIT}&sort=${REDDIT_PARAMS.SORT}&t=${REDDIT_PARAMS.TIME}&type=link`;
+
+      const response = await redditApiRequest(searchUrl);
+
+      const posts = response.data.children
+        .filter((child) => child.kind === "t3")
+        .map((child) => mapPostToRedditItem(child.data));
 
       output.push({
         topic,
-        comments: comments.map(mapCommentToRedditItem),
-        posts: posts.map(mapPostToRedditItem),
+        posts,
       });
 
       logger.info(
-        `Successfully fetched ${comments.length} comments and ${posts.length} posts for topic: ${topic}`,
+        { topic, postsCount: posts.length },
+        "Successfully fetched Reddit posts for topic",
       );
 
       if (topics.indexOf(topic) < topics.length - 1) {
-        await delay(1000);
+        await delay(2000);
       }
     } catch (err) {
       logger.error(
-        `Failed to fetch Reddit data for topic: ${topic} - ${err instanceof Error ? err.message : "Unknown error"}`,
+        {
+          topic,
+          error: err instanceof Error ? err.message : "Unknown error",
+        },
+        "Failed to fetch Reddit data for topic",
       );
 
       output.push({
         topic,
-        comments: [],
         posts: [],
       });
     }
   }
 
-  logger.info(`Reddit search completed. Fetched data for ${output.length} topics`);
+  logger.info({ topicsCount: output.length }, "Reddit search completed");
   return output;
 };

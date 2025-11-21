@@ -1,12 +1,11 @@
-export const REDDIT_BASE_URL = "https://api.pushshift.io/reddit/search";
+export const REDDIT_BASE_URL = "https://www.reddit.com";
 
 export const REDDIT_ENDPOINTS = {
-  COMMENT: `${REDDIT_BASE_URL}/comment/`,
-  SUBMISSION: `${REDDIT_BASE_URL}/submission/`,
+  SEARCH: `${REDDIT_BASE_URL}/search.json`,
 } as const;
 
 export const REDDIT_PARAMS = {
-  SIZE: 5,
-  SORT: "desc",
-  SORT_TYPE: "score",
+  LIMIT: 10,
+  SORT: "relevance",
+  TIME: "month",
 } as const;
