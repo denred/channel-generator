@@ -6,4 +6,9 @@ export const ErrorMessages: Record<AppErrors, string> = {
   [AppErrors.ANALYSIS_FAILED]: "Failed to analyze the channel.",
   [AppErrors.UNKNOWN_ERROR]: "Something went wrong. Please try again later.",
   [AppErrors.CHANNEL_URL_REQUIRED]: "Channel URL is required.",
+  [AppErrors.YOUTUBE_CHANNEL_REQUIRED]: "YouTube channel URL is required.",
+  [AppErrors.INVALID_YOUTUBE_CHANNEL]: "The provided URL is not a valid YouTube channel.",
+  [AppErrors.API_KEY_MISSING]: "YouTube API key is missing.",
+  [AppErrors.API_REQUEST_FAILED]: "YouTube API request failed.",
+  [AppErrors.INVALID_API_RESPONSE]: "Received invalid response from YouTube API.",
 };

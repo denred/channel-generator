@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 
 import { AppErrors } from "@/libs/enums/appErrors";
 import { HttpCode } from "@/libs/enums/httpCode";
+import { getChannelIdFromUrl } from "@/services/youtube/getChannelIdFromUrl";
 import { getErrorResponse } from "@/utils/errorResponse";
 
 interface AnalyzeChannelRequest {
@@ -19,7 +20,15 @@ export const POST = async (req: NextRequest) => {
       );
     }
 
-    return NextResponse.json({ status: HttpCode.OK, channelUrl });
+    const channelId = await getChannelIdFromUrl(channelUrl);
+
+    return NextResponse.json(
+      {
+        status: HttpCode.OK,
+        channelId,
+      },
+      { status: HttpCode.OK },
+    );
   } catch (err) {
     const { error, message, status } = getErrorResponse(err);
 
