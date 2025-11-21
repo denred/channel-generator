@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 
 import { AppErrors } from "@/libs/enums/appErrors";
 import { HttpCode } from "@/libs/enums/httpCode";
-import { getRelevantNewsFromNewsApi } from "@/services/newsapi/getRelevantNewsFromNewsApi";
+import { getRelevantNewsFromNewsApi } from "@/services/news/newsapi/getRelevantNewsFromNewsApi";
 import { extractTopicsFromVideos } from "@/services/openai/extractTopicsFromVideos";
 import { generateVideoIdeas } from "@/services/openai/generateVideoIdeas";
 import { searchRedditDiscussions } from "@/services/reddit/searchRedditDiscussions";

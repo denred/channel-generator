@@ -20,8 +20,10 @@ export const useAnalyzeChannel = () => {
     setResult(null);
     setSteps(INITIAL_STEPS);
 
+    let progressInterval: NodeJS.Timeout | null = null;
+
     try {
-      const progressInterval = setInterval(() => {
+      progressInterval = setInterval(() => {
         setSteps((prev) => {
           const currentStepIndex = prev.findIndex((s) => !s.done);
           if (currentStepIndex !== -1 && currentStepIndex < prev.length - 1) {
@@ -36,8 +38,6 @@ export const useAnalyzeChannel = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ channelUrl }),
       });
-
-      clearInterval(progressInterval);
 
       if (!res.ok) {
         const errorData = (await res.json()) as { message?: string };
@@ -54,8 +54,19 @@ export const useAnalyzeChannel = () => {
       const { error } = getErrorResponse(err);
       setError(error);
       setStatus(RequestStatus.ERROR);
+    } finally {
+      if (progressInterval) {
+        clearInterval(progressInterval);
+      }
     }
   };
 
-  return { status, steps, result, error, loading, startAnalysis };
+  const reset = () => {
+    setStatus(RequestStatus.IDLE);
+    setError(null);
+    setResult(null);
+    setSteps(INITIAL_STEPS);
+  };
+
+  return { status, steps, result, error, loading, startAnalysis, reset };
 };
