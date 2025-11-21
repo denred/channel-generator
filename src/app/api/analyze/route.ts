@@ -7,6 +7,7 @@ import { extractTopicsFromVideos } from "@/services/openai/extractTopicsFromVide
 import { generateVideoIdeas } from "@/services/openai/generateVideoIdeas";
 import { searchRedditDiscussions } from "@/services/reddit/searchRedditDiscussions";
 import { getChannelIdFromUrl } from "@/services/youtube/getChannelIdFromUrl";
+import { getChannelInfo } from "@/services/youtube/getChannelInfo";
 import { getLastVideos } from "@/services/youtube/getLastVideos";
 import { getErrorResponse } from "@/utils/errorResponse";
 
@@ -26,15 +27,12 @@ export const POST = async (req: NextRequest) => {
     }
 
     const channelId = await getChannelIdFromUrl(channelUrl);
-    const lastVideos = await getLastVideos(channelId);
+    const [channelInfo, lastVideos] = await Promise.all([
+      getChannelInfo(channelId),
+      getLastVideos(channelId),
+    ]);
 
-    const topics = await extractTopicsFromVideos(
-      lastVideos.map((v) => ({
-        title: v.title,
-        description: v.description,
-      })),
-    );
-
+    const topics = await extractTopicsFromVideos(lastVideos);
     const topicStrings = topics.topics.map((t) => t.topic);
 
     const news = await getRelevantNewsFromNewsApi(topicStrings);
@@ -51,6 +49,7 @@ export const POST = async (req: NextRequest) => {
       {
         status: HttpCode.OK,
         channelId,
+        channelName: channelInfo.channelName,
         lastVideos,
         topics,
         news,

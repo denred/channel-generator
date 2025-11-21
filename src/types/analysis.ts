@@ -11,6 +11,7 @@ export interface AnalysisStep {
 export interface AnalyzeChannelResponse {
   status: number;
   channelId: string;
+  channelName?: string;
   lastVideos: Array<{
     videoId: string;
     title: string;
